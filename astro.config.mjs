@@ -5,7 +5,8 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
-  site: 'https://yourdomain.com', // update before deploy
+  site: 'https://mldoesml.github.io',
+  base: '/technical-blog',
   integrations: [
     mdx(),
     sitemap(),
