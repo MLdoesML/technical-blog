@@ -11,6 +11,7 @@ const sorted = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
 <BaseLayout title="Archive" description="All posts.">
   <div class="page-wrapper">
     <header class="archive-header">
+      <p class="eyebrow">Index</p>
       <h1>Archive</h1>
       <nav class="domain-filter">
         <a href="/archive" class="filter-link active">All</a>
@@ -49,8 +50,9 @@ const sorted = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
 
   h1 {
     font-family: var(--font-serif);
-    font-size: 2rem;
+    font-size: clamp(2.25rem, 4vw, 3rem);
     font-weight: 400;
+    line-height: 1.1;
     margin-bottom: var(--space-6);
   }
 
@@ -65,7 +67,8 @@ const sorted = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.value
     font-size: 12px;
     color: var(--color-text-muted);
     border: 1px solid var(--color-border);
-    padding: 3px var(--space-3);
+    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    padding: 4px var(--space-3);
     border-radius: 3px;
     text-decoration: none;
     transition: color 0.15s, border-color 0.15s;

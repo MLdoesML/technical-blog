@@ -6,27 +6,35 @@ import '../styles/prose.css';
 <BaseLayout title="About" description="About the author.">
   <div class="page-wrapper">
     <article class="prose about-prose">
+      <p class="eyebrow">About</p>
       <h1>About</h1>
 
       <p>
-        <!-- Replace this section with your bio -->
-        I am a researcher and practitioner working at the intersection of machine learning,
-        economic theory, and the physical sciences. My work spans theoretical foundations
-        and applied problems across domains.
+        This site is a home for long-form technical writing: research notes, paper digests,
+        conceptual essays, and occasional working drafts that are clearer than a thread and
+        lighter than a formal publication.
       </p>
 
-      <h2>Research interests</h2>
+      <p>
+        For non-technical writing, see the sister Substack
+        <a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">
+          Approximately Correct
+        </a>.
+      </p>
+
+      <h2>What you'll find here</h2>
       <ul>
-        <li>Generative modeling and score-based methods</li>
-        <li>Market design and mechanism theory</li>
-        <li>Statistical physics and its connections to learning</li>
+        <li>Machine learning essays that privilege first principles over hype</li>
+        <li>Technical notes connecting economics, physics, biology, and computation</li>
+        <li>Reference-style posts with math, code, and citations designed for careful reading</li>
       </ul>
 
-      <h2>Contact</h2>
+      <h2>Elsewhere</h2>
       <p>
-        <a href="mailto:you@example.com">you@example.com</a> ·
-        <a href="https://github.com/yourusername" target="_blank" rel="noopener">GitHub</a> ·
-        <a href="https://twitter.com/yourusername" target="_blank" rel="noopener">Twitter</a>
+        Non-technical essays and broader reflections live on
+        <a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">
+          Approximately Correct
+        </a>.
       </p>
     </article>
   </div>
@@ -39,6 +47,7 @@ import '../styles/prose.css';
   }
 
   .about-prose h1 {
+    margin-top: var(--space-2);
     margin-bottom: var(--space-8);
   }
 </style>

@@ -12,9 +12,10 @@ const recent = sorted.slice(0, 8);
 <BaseLayout title="Writing" description="Research notes on ML/AI, economics, physics, biology, chemistry, and business.">
   <div class="page-wrapper">
     <section class="intro">
+      <p class="eyebrow">Research Blog</p>
       <h1 class="site-title">Writing</h1>
       <p class="site-desc">
-        Research notes and essays on machine learning, economics, the physical and life sciences, and strategy.
+        Long-form essays on machine learning, economics, the physical and life sciences, and strategy. Built to read like a notebook, not a feed.
       </p>
       <div class="domain-nav">
         {Object.entries(DOMAIN_LABELS).map(([slug, label]) => (
@@ -59,8 +60,11 @@ const recent = sorted.slice(0, 8);
 
   .site-title {
     font-family: var(--font-serif);
-    font-size: 2rem;
+    font-size: clamp(2.5rem, 4vw, 3.5rem);
     font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-top: var(--space-2);
     margin-bottom: var(--space-4);
   }
 
@@ -68,14 +72,15 @@ const recent = sorted.slice(0, 8);
     font-family: var(--font-sans);
     font-size: 15px;
     color: var(--color-text-muted);
-    line-height: 1.7;
-    margin-bottom: var(--space-6);
+    line-height: 1.85;
+    margin-bottom: var(--space-8);
+    max-width: 58ch;
   }
 
   .domain-nav {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-1);
+    gap: var(--space-2);
   }
 
   .domain-link {
@@ -83,7 +88,8 @@ const recent = sorted.slice(0, 8);
     font-size: 12px;
     color: var(--color-text-muted);
     border: 1px solid var(--color-border);
-    padding: 3px var(--space-3);
+    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    padding: 4px var(--space-3);
     border-radius: 3px;
     text-decoration: none;
     transition: color 0.15s, border-color 0.15s;

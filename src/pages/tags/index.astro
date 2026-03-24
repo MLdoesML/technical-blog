@@ -9,6 +9,7 @@ const tagsByDomain = groupTagsByDomain(allPosts);
 
 <BaseLayout title="Tags" description="Browse posts by topic.">
   <div class="page-wrapper">
+    <p class="eyebrow">Browse</p>
     <h1>Topics</h1>
 
     {Object.entries(DOMAIN_LABELS).map(([domainSlug, domainLabel]) => {
@@ -42,8 +43,10 @@ const tagsByDomain = groupTagsByDomain(allPosts);
 
   h1 {
     font-family: var(--font-serif);
-    font-size: 2rem;
+    font-size: clamp(2.25rem, 4vw, 3rem);
     font-weight: 400;
+    line-height: 1.1;
+    margin-top: var(--space-2);
     margin-bottom: var(--space-12);
   }
 
@@ -80,7 +83,7 @@ const tagsByDomain = groupTagsByDomain(allPosts);
     font-family: var(--font-sans);
     font-size: 13px;
     color: var(--color-text-muted);
-    background: var(--color-surface);
+    background: color-mix(in srgb, var(--color-surface) 74%, transparent);
     border: 1px solid var(--color-border);
     padding: var(--space-1) var(--space-3);
     border-radius: 3px;
