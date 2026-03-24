@@ -1,0 +1,112 @@
+---
+import { DOMAIN_LABELS } from '../../lib/tags';
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="page-wrapper header-inner">
+    <a href="/" class="site-name">Your Name</a>
+
+    <nav aria-label="Primary navigation">
+      <a href="/" class:list={['nav-link', { active: pathname === '/' }]}>Writing</a>
+      <a href="/archive" class:list={['nav-link', { active: pathname.startsWith('/archive') }]}>Archive</a>
+      <a href="/about" class:list={['nav-link', { active: pathname === '/about' }]}>About</a>
+    </nav>
+
+    <button id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+
+  function updateIcons() {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    (document.querySelector('.icon-sun') as HTMLElement).style.display = isDark ? 'none' : 'block';
+    (document.querySelector('.icon-moon') as HTMLElement).style.display = isDark ? 'block' : 'none';
+  }
+
+  updateIcons();
+
+  toggle?.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateIcons();
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: var(--header-height);
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    height: 100%;
+  }
+
+  .site-name {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    flex-shrink: 0;
+    margin-right: auto;
+  }
+
+  nav {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .nav-link {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--color-text);
+  }
+
+  #theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    padding: var(--space-2);
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+  }
+
+  #theme-toggle:hover {
+    color: var(--color-text);
+  }
+</style>

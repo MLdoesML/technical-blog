@@ -1,0 +1,132 @@
+---
+title: "Score Matching and the Geometry of Diffusion Models"
+subtitle: "Why the score function is the right object to learn"
+date: 2026-03-24
+domain: "ml-ai"
+tags: ["diffusion-models", "score-matching", "generative-models", "stochastic-processes"]
+summary: "Diffusion models achieve state-of-the-art generation by learning the score of a data distribution. I trace why this works: from Hyvärinen's original score matching objective to the stochastic differential equation perspective that unifies the entire family."
+math: true
+toc: true
+featured: true
+draft: false
+---
+
+Generative modeling is fundamentally a density estimation problem. Given samples $x \sim p_{\text{data}}(x)$, we want a model that can evaluate likelihoods and draw new samples. The question is: what is the right object to estimate?
+
+Variational autoencoders answer with a latent-variable model. GANs answer with an implicit distribution. Normalizing flows answer with an invertible map. Diffusion models give a different, and in many ways more elegant, answer: learn the **score function** — the gradient of the log-density — rather than the density itself.
+
+## The score function
+
+For a distribution $p(x)$ over $\mathbb{R}^d$, the score is
+
+$$
+s(x) = \nabla_x \log p(x).
+$$
+
+This is a vector field pointing in the direction of increasing log-probability. Its key property: it does not require knowing the normalizing constant $Z$ in $p(x) = \tilde{p}(x)/Z$, because
+
+$$
+\nabla_x \log p(x) = \nabla_x \log \tilde{p}(x) - \nabla_x \log Z = \nabla_x \log \tilde{p}(x),
+$$
+
+since $Z$ does not depend on $x$. This is why score-based methods sidestep the intractability that plagues energy-based models.
+
+## Score matching
+
+Hyvärinen (2005) proposed estimating the score directly. Given a parameterized model $s_\theta(x)$, the **score matching objective** is
+
+$$
+\mathcal{L}_{\text{SM}}(\theta) = \mathbb{E}_{p_{\text{data}}}\left[ \tfrac{1}{2}\|s_\theta(x)\|^2 + \nabla_x \cdot s_\theta(x) \right].
+$$
+
+The term $\nabla_x \cdot s_\theta(x)$ is the divergence of the score model — expensive for high-dimensional $x$ because it requires $d$ Jacobian-vector products. This is the computational bottleneck that motivated subsequent work.
+
+### Denoising score matching
+
+Vincent (2011) showed an equivalence that makes the problem tractable. Rather than matching the score of $p_{\text{data}}$ directly, match the score of a *noisy* version $p_\sigma(x) = \int p_{\text{data}}(y) \, \mathcal{N}(x; y, \sigma^2 I) \, dy$.
+
+The key identity: the optimal denoiser $D^*_\sigma(x)$ satisfies
+
+$$
+\nabla_x \log p_\sigma(x) = \frac{D^*_\sigma(x) - x}{\sigma^2}.
+$$
+
+So learning to denoise is equivalent to learning the score. The training objective becomes
+
+$$
+\mathcal{L}_{\text{DSM}}(\theta) = \mathbb{E}_{x_0 \sim p_{\text{data}},\, \epsilon \sim \mathcal{N}(0, I)}\left[ \left\| s_\theta(x_0 + \sigma \epsilon) + \frac{\epsilon}{\sigma} \right\|^2 \right],
+$$
+
+which requires no divergence computation — only forward passes through $s_\theta$.
+
+## The noise schedule as an SDE
+
+The modern perspective, due to Song et al. (2021), casts diffusion as a **stochastic differential equation**. Define a forward process
+
+$$
+dx = f(x, t)\, dt + g(t)\, dW_t, \quad x_0 \sim p_{\text{data}},
+$$
+
+where $W_t$ is a standard Wiener process. For the **variance-preserving** (VP) SDE:
+
+$$
+dx = -\tfrac{1}{2}\beta(t) x\, dt + \sqrt{\beta(t)}\, dW_t.
+$$
+
+As $t \to T$, $p_t(x) \approx \mathcal{N}(0, I)$ regardless of $p_0$. Generation then proceeds by running the **reverse SDE**:
+
+$$
+dx = \left[ f(x, t) - g(t)^2 \nabla_x \log p_t(x) \right] dt + g(t)\, d\bar{W}_t,
+$$
+
+where $\bar{W}_t$ is a reverse-time Wiener process. The only unknown in the reverse SDE is $\nabla_x \log p_t(x)$ — the score of $p_t$ — which is exactly what the network $s_\theta(x, t)$ is trained to approximate.
+
+This gives a clean separation of concerns: the forward process is a fixed diffusion that we design; the reverse process is the generative model; the score network is the learnable component.
+
+## Training in practice
+
+In PyTorch, the core training loop is:
+
+```python
+def loss_fn(model, x0, t, noise=None):
+    """
+    x0: (B, C, H, W) clean images
+    t:  (B,)          continuous time in [0, 1]
+    """
+    if noise is None:
+        noise = torch.randn_like(x0)
+
+    # VP-SDE marginal: x_t = sqrt(alpha_bar_t) * x0 + sqrt(1 - alpha_bar_t) * noise
+    alpha_bar = alpha_bar_schedule(t)[:, None, None, None]
+    x_t = alpha_bar.sqrt() * x0 + (1 - alpha_bar).sqrt() * noise
+
+    # Predict score: s_theta(x_t, t) ≈ -noise / sqrt(1 - alpha_bar_t)
+    predicted_noise = model(x_t, t)
+    return F.mse_loss(predicted_noise, noise)
+```
+
+Note the re-parameterization: instead of predicting the score directly, the network predicts the noise $\epsilon$ added during the forward process. The score is recovered as $s_\theta = -\epsilon_\theta / \sqrt{1 - \bar\alpha_t}$.
+
+## Why this works: an information-theoretic view
+
+The denoising objective has a clean interpretation via Fisher information. Define the **Fisher divergence** between two distributions:
+
+$$
+D_F(p \| q) = \mathbb{E}_p\left[ \| \nabla_x \log p(x) - \nabla_x \log q(x) \|^2 \right].
+$$
+
+Score matching minimizes the Fisher divergence between the data distribution and the model. This is a metric on distributions that is often more well-behaved than the KL divergence near the boundaries of the support — which is precisely where GANs and VAEs tend to fail.
+
+## Connections and open questions
+
+The SDE perspective immediately suggests connections to other areas:
+
+- **Optimal transport**: the probability flow ODE associated with the reverse SDE maps $p_T$ to $p_0$ and is related to the Schrödinger bridge problem.
+- **Statistical physics**: the score is the force field in a Langevin dynamics interpretation; diffusion models are essentially learning a Boltzmann distribution.
+- **Inverse problems**: because we can evaluate $\nabla_x \log p_t(x)$ at any time $t$, we can solve inverse problems (inpainting, super-resolution, compressed sensing) without retraining, by replacing the unconditional score with a guided one.
+
+What remains unclear: the theoretical sample complexity of learning $s_\theta$, the optimal architecture inductive bias for score networks over different data modalities, and whether the continuous-time SDE framework is actually necessary or if discrete Markov chains are sufficient for practice.
+
+---
+
+*If you found this useful, [subscribe via RSS](/rss.xml) — no email required.*

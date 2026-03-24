@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PostCard from '../../components/ui/PostCard.astro';
+import { DOMAIN_LABELS, normalizeTag, getAllTags } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+
+  // Collect all unique tags (both domain slugs and freeform tags)
+  const domainSlugs = Object.keys(DOMAIN_LABELS);
+  const freeTags = getAllTags(allPosts);
+  const allTags = [...new Set([...domainSlugs, ...freeTags])];
+
+  return allTags.map(tag => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.params;
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+
+// Filter: match domain or freeform tag
+const filtered = allPosts
+  .filter(post => {
+    const isDomain = post.data.domain === tag;
+    const hasTag = post.data.tags.some(t => normalizeTag(t) === tag);
+    return isDomain || hasTag;
+  })
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const isDomain = tag in DOMAIN_LABELS;
+const pageTitle = isDomain ? DOMAIN_LABELS[tag] : tag;
+---
+
+<BaseLayout title={pageTitle} description={`Posts tagged ${pageTitle}.`}>
+  <div class="page-wrapper">
+    <header class="tag-header">
+      <p class="breadcrumb"><a href="/tags">Topics</a> /</p>
+      <h1>{pageTitle}</h1>
+      <p class="post-count">{filtered.length} post{filtered.length !== 1 ? 's' : ''}</p>
+    </header>
+
+    <div class="posts-list">
+      {filtered.map(post => (
+        <PostCard
+          title={post.data.title}
+          subtitle={post.data.subtitle}
+          date={post.data.date}
+          domain={post.data.domain}
+          tags={post.data.tags}
+          summary={post.data.summary}
+          slug={post.id}
+        />
+      ))}
+
+      {filtered.length === 0 && (
+        <p class="empty">No posts yet.</p>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-20);
+  }
+
+  .tag-header {
+    margin-bottom: var(--space-12);
+    max-width: var(--prose-width);
+  }
+
+  .breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .breadcrumb a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: var(--space-2);
+  }
+
+  .post-count {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  .posts-list {
+    max-width: var(--prose-width);
+  }
+
+  .empty {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-text-muted);
+    padding: var(--space-8) 0;
+  }
+</style>

@@ -1,0 +1,90 @@
+---
+import Header from './Header.astro';
+import '../../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  math?: boolean;
+}
+
+const { title, description = 'A researcher\'s notebook.', math = false } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+    <title>{title}</title>
+
+    <!-- Fonts: EB Garamond, Inter, JetBrains Mono (Google Fonts CDN for now) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- KaTeX CSS (only when math is enabled) -->
+    {math && (
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"
+        crossorigin="anonymous"
+      />
+    )}
+
+    <!-- Styles injected via Astro CSS bundling (global.css imported in frontmatter) -->
+
+    <!-- RSS autodiscovery -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="RSS Feed"
+      href="/rss.xml"
+    />
+
+    <!-- Dark mode: set theme before paint to prevent flash -->
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+  </head>
+  <body>
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <footer>
+      <div class="page-wrapper footer-inner">
+        <span>© {new Date().getFullYear()}</span>
+        <a href="/rss.xml">RSS</a>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  footer {
+    margin-top: var(--space-20);
+    padding: var(--space-8) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+</style>

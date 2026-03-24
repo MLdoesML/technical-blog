@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import PostCard from '../components/ui/PostCard.astro';
+import { DOMAIN_LABELS } from '../lib/tags';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sorted = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const recent = sorted.slice(0, 8);
+---
+
+<BaseLayout title="Writing" description="Research notes on ML/AI, economics, physics, biology, chemistry, and business.">
+  <div class="page-wrapper">
+    <section class="intro">
+      <h1 class="site-title">Writing</h1>
+      <p class="site-desc">
+        Research notes and essays on machine learning, economics, the physical and life sciences, and strategy.
+      </p>
+      <div class="domain-nav">
+        {Object.entries(DOMAIN_LABELS).map(([slug, label]) => (
+          <a href={`/tags/${slug}`} class="domain-link">{label}</a>
+        ))}
+      </div>
+    </section>
+
+    <section class="posts-list">
+      {recent.map(post => (
+        <PostCard
+          title={post.data.title}
+          subtitle={post.data.subtitle}
+          date={post.data.date}
+          domain={post.data.domain}
+          tags={post.data.tags}
+          summary={post.data.summary}
+          slug={post.id}
+          featured={post.data.featured}
+        />
+      ))}
+
+      {sorted.length > 8 && (
+        <div class="see-all">
+          <a href="/archive">All posts →</a>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-20);
+  }
+
+  .intro {
+    margin-bottom: var(--space-12);
+    max-width: var(--prose-width);
+  }
+
+  .site-title {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: var(--space-4);
+  }
+
+  .site-desc {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+  }
+
+  .domain-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+
+  .domain-link {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    padding: 3px var(--space-3);
+    border-radius: 3px;
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .domain-link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .posts-list {
+    max-width: var(--prose-width);
+  }
+
+  .see-all {
+    padding-top: var(--space-8);
+    font-family: var(--font-sans);
+    font-size: 14px;
+  }
+
+  .see-all a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .see-all a:hover {
+    color: var(--color-accent);
+  }
+</style>

@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { DOMAIN_LABELS, groupTagsByDomain } from '../../lib/tags';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const tagsByDomain = groupTagsByDomain(allPosts);
+---
+
+<BaseLayout title="Tags" description="Browse posts by topic.">
+  <div class="page-wrapper">
+    <h1>Topics</h1>
+
+    {Object.entries(DOMAIN_LABELS).map(([domainSlug, domainLabel]) => {
+      const tags = tagsByDomain[domainSlug] ?? [];
+      if (tags.length === 0) return null;
+      return (
+        <section class="domain-section">
+          <h2>
+            <a href={`/tags/${domainSlug}`}>{domainLabel}</a>
+          </h2>
+          <div class="tag-cloud">
+            {tags.map(tag => (
+              <a href={`/tags/${tag}`} class="tag-pill">{tag}</a>
+            ))}
+          </div>
+        </section>
+      );
+    })}
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-20);
+    max-width: calc(var(--prose-width) + var(--page-margin) * 2);
+    margin: 0 auto;
+    padding-left: var(--page-margin);
+    padding-right: var(--page-margin);
+  }
+
+  h1 {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: var(--space-12);
+  }
+
+  .domain-section {
+    margin-bottom: var(--space-10);
+  }
+
+  h2 {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+  }
+
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    color: var(--color-accent);
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .tag-pill {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 3px;
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tag-pill:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    text-decoration: none;
+  }
+</style>

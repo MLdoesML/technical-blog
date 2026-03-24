@@ -1,0 +1,100 @@
+/* ─── Theme variables ─────────────────────────────────────────────────────── */
+:root {
+  --color-bg:           #fafaf8;
+  --color-surface:      #f3f2ef;
+  --color-border:       #e5e3de;
+  --color-text:         #1a1a18;
+  --color-text-muted:   #6b6b60;
+  --color-accent:       #c0392b;
+  --color-accent-soft:  #f8e8e6;
+
+  --font-serif:   'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  --prose-width: 68ch;
+  --page-margin: var(--space-16);
+  --header-height: 56px;
+}
+
+[data-theme="dark"] {
+  --color-bg:           #141413;
+  --color-surface:      #1e1e1c;
+  --color-border:       #2e2e2c;
+  --color-text:         #e8e8e4;
+  --color-text-muted:   #9b9b8f;
+  --color-accent:       #e05a4e;
+  --color-accent-soft:  #2e1a18;
+}
+
+/* ─── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+}
+
+img, video, svg {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Layout shell ────────────────────────────────────────────────────────── */
+.page-wrapper {
+  max-width: calc(var(--prose-width) + var(--page-margin) * 2);
+  margin: 0 auto;
+  padding: 0 var(--page-margin);
+}
+
+@media (max-width: 640px) {
+  .page-wrapper {
+    padding: 0 var(--space-6);
+  }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
