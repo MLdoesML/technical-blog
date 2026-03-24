@@ -3,40 +3,111 @@ import BaseLayout from '../components/layout/BaseLayout.astro';
 import '../styles/prose.css';
 ---
 
-<BaseLayout title="About" description="About the author.">
+<BaseLayout title="About — James Ming" description="About James Ming — research, writing, and interests.">
   <div class="page-wrapper">
-    <article class="prose about-prose">
-      <p class="eyebrow">About</p>
-      <h1>About</h1>
+    <div class="about-shell">
+      <article class="prose about-prose">
+        <p class="eyebrow">About</p>
+        <h1>James Ming</h1>
 
-      <p>
-        This site is a home for long-form technical writing: research notes, paper digests,
-        conceptual essays, and occasional working drafts that are clearer than a thread and
-        lighter than a formal publication.
-      </p>
+        <p class="lede about-lede">
+          I work at the intersection of machine learning, economics, and complex systems —
+          trying to understand how things actually work, not just how they're described.
+        </p>
 
-      <p>
-        For non-technical writing, see the sister Substack
-        <a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">
-          Approximately Correct
-        </a>.
-      </p>
+        <p>
+          This site is where I do my thinking in public. Posts tend to be long, careful, and
+          equation-heavy. I write about ideas I've had to work hard to understand, in the hope
+          that writing them down makes them clearer — for me first, and for you second.
+        </p>
 
-      <h2>What you'll find here</h2>
-      <ul>
-        <li>Machine learning essays that privilege first principles over hype</li>
-        <li>Technical notes connecting economics, physics, biology, and computation</li>
-        <li>Reference-style posts with math, code, and citations designed for careful reading</li>
-      </ul>
+        <p>
+          Most posts are either deep technical explainers (score-based generative models, mechanism
+          design, renormalization group methods) or cross-domain essays that trace a single idea
+          across fields — the kind of structural similarity that emerges when you look at information
+          theory, statistical mechanics, and evolutionary biology side by side.
+        </p>
 
-      <h2>Elsewhere</h2>
-      <p>
-        Non-technical essays and broader reflections live on
-        <a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">
-          Approximately Correct
-        </a>.
-      </p>
-    </article>
+        <hr />
+
+        <h2>Research interests</h2>
+        <ul>
+          <li>Generative models — diffusion, flow matching, score-based methods</li>
+          <li>Inference and uncertainty — Bayesian nonparametrics, calibration, epistemic humility</li>
+          <li>Economics as a formal science — mechanism design, market microstructure, information economics</li>
+          <li>Computational biology — statistical methods in genomics, evolutionary dynamics</li>
+          <li>Physics of learning — statistical mechanics of neural networks, renormalization, phase transitions</li>
+        </ul>
+
+        <h2>What you'll find here</h2>
+        <ul>
+          <li>
+            <strong>Research notes:</strong> working through papers in detail, often with
+            derivations filled in and claims stress-tested
+          </li>
+          <li>
+            <strong>Technical essays:</strong> first-principles treatments of ideas I think are
+            under-explained in the literature
+          </li>
+          <li>
+            <strong>Cross-domain connections:</strong> structural analogies between seemingly
+            unrelated fields — thermodynamics and information, evolution and gradient descent
+          </li>
+          <li>
+            <strong>Occasional working drafts:</strong> rougher notes on things I'm actively
+            thinking through
+          </li>
+        </ul>
+
+        <h2>Elsewhere</h2>
+        <p>
+          Non-technical writing — career, strategy, broader reflections — lives on
+          <a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">
+            Approximately Correct
+          </a>.
+          Code lives on
+          <a href="https://github.com/jamesmingliangang" target="_blank" rel="noopener">GitHub</a>.
+        </p>
+
+        <p class="contact-note">
+          For research questions or corrections: reach me via
+          <a href="https://github.com/jamesmingliangang" target="_blank" rel="noopener">GitHub</a>.
+          I read everything; I reply slowly.
+        </p>
+      </article>
+
+      <aside class="about-rail">
+        <div class="rail-block">
+          <p class="rail-label">Domains</p>
+          <ul class="rail-list">
+            <li>Machine learning</li>
+            <li>Economics</li>
+            <li>Physics</li>
+            <li>Biology</li>
+            <li>Chemistry</li>
+            <li>Business strategy</li>
+          </ul>
+        </div>
+
+        <div class="rail-block">
+          <p class="rail-label">This site</p>
+          <ul class="rail-list">
+            <li>Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a></li>
+            <li>Math via KaTeX</li>
+            <li>Hosted on GitHub Pages</li>
+          </ul>
+        </div>
+
+        <div class="rail-block">
+          <p class="rail-label">Links</p>
+          <ul class="rail-list">
+            <li><a href="https://approximatelycorrect.substack.com/" target="_blank" rel="noopener">Substack</a></li>
+            <li><a href="https://github.com/jamesmingliangang" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="/rss.xml">RSS</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
   </div>
 </BaseLayout>
 
@@ -46,8 +117,91 @@ import '../styles/prose.css';
     padding-bottom: var(--space-20);
   }
 
+  .about-shell {
+    display: grid;
+    grid-template-columns: minmax(0, var(--prose-width)) minmax(14rem, var(--rail-width));
+    column-gap: var(--space-12);
+    align-items: start;
+  }
+
   .about-prose h1 {
     margin-top: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .about-lede {
     margin-bottom: var(--space-8);
+  }
+
+  .contact-note {
+    font-size: 0.9em;
+    color: var(--color-text-muted);
+  }
+
+  /* Rail */
+  .about-rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    padding-top: 5.5rem; /* align with prose after eyebrow + h1 */
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-8));
+  }
+
+  .rail-block {
+    border-top: 1px solid var(--color-border);
+    padding-top: var(--space-4);
+  }
+
+  .rail-label {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .rail-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-text-muted);
+  }
+
+  .rail-list a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .rail-list a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 980px) {
+    .about-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .about-rail {
+      position: static;
+      padding-top: 0;
+      border-top: 1px solid var(--color-border);
+      padding-top: var(--space-8);
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: var(--space-6);
+    }
+
+    .rail-block {
+      border-top: none;
+      padding-top: 0;
+    }
   }
 </style>
